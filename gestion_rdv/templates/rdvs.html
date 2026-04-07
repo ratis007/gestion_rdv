@@ -1,0 +1,943 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Rendez-vous{% endblock %}
+
+{% block extra_css %}
+
+
+.rdvs-layout {
+    display: grid;
+    grid-template-columns: 30% 70%;
+    grid-template-areas: "sidebar main";
+    gap: 1.5rem;
+    align-items: stretch;
+    width: 100%;
+    margin-bottom: 1.5rem;
+}
+
+.rdvs-sidebar {
+    grid-area: sidebar;
+}
+
+.rdvs-main {
+    grid-area: main;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    min-width: 0;
+}
+
+.rdvs-sidebar-panel {
+    background: #6A5ACD;
+    border-radius: 20px;
+    padding: 2rem;
+    min-height: 760px;
+    box-shadow: 0 28px 60px rgba(106, 90, 205, 0.18);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    gap: 1.75rem;
+}
+
+.sidebar-head {
+    display: flex;
+    flex-direction: column;
+    gap: 0.65rem;
+}
+
+.sidebar-pretitle {
+    margin: 0;
+    color: rgba(255,255,255,0.82);
+    font-size: 0.95rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.sidebar-date {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.sidebar-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 260px;
+    padding: 1.5rem;
+    background: rgba(255,255,255,0.08);
+    border-radius: 18px;
+    color: rgba(255,255,255,0.76);
+    text-align: center;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.sidebar-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.sidebar-item {
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 18px;
+    padding: 1rem 1rem 1.05rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.95rem;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
+}
+
+.sidebar-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 18px 32px rgba(15, 23, 42, 0.14);
+    background: rgba(255,255,255,0.18);
+}
+
+.sidebar-time-pill {
+    align-self: flex-start;
+    background: rgba(255,255,255,0.9);
+    color: #2c2c2c;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.sidebar-item-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1rem;
+    font-size: 0.95rem;
+    color: rgba(255,255,255,0.95);
+}
+
+.sidebar-item-grid span {
+    display: block;
+    font-size: 0.76rem;
+    color: rgba(255,255,255,0.72);
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.sidebar-item-grid strong {
+    font-size: 0.96rem;
+    color: #ffffff;
+    font-weight: 700;
+}
+
+.sidebar-item-status {
+    align-self: flex-start;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.state-waiting {
+    background: #FFD700;
+    color: #3f3f3f;
+}
+
+.state-ok {
+    background: #2ECC71;
+    color: #ffffff;
+}
+
+.state-cancel {
+    background: #E74C3C;
+    color: #ffffff;
+}
+
+.state-neutral {
+    background: rgba(255,255,255,0.18);
+    color: #ffffff;
+}
+
+.rdvs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.rdvs-calendar-card {
+    background: #ffffff;
+    border-radius: 24px;
+    box-shadow: 0 28px 68px rgba(15, 23, 42, 0.12);
+    border: 1px solid #eef2ff;
+    width: 100%;
+}
+
+.rdvs-calendar-card .card-header {
+    background: transparent;
+    border: none;
+    padding: 1.75rem 1.75rem 1rem;
+}
+
+.rdvs-calendar-card .card-body {
+    padding: 0;
+    width: 100%;
+}
+
+.rdvs-calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.rdvs-calendar-header .calendar-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #2c0f55;
+}
+
+.rdvs-calendar-card .card-header p {
+    margin-top: 0.75rem;
+    color: #6b7280;
+}
+
+#calendar {
+    width: 100%;
+    min-height: 700px;
+}
+
+.rdvs-calendar-card .card-body {
+    min-height: 700px;
+}
+
+/* ── DayPilot overrides ─────────────────────────────────────────────────── */
+.calendar_default_main,
+.month_default_main {
+    width: 100% !important;
+    border: none !important;
+    font-family: inherit !important;
+    table-layout: fixed !important;
+}
+
+.calendar_default_cell {
+    min-height: 110px;
+    border: 1px solid #d1d5db !important;
+    box-sizing: border-box;
+    background: #ffffff;
+}
+
+.calendar_default_cell:hover {
+    background: rgba(24, 160, 155, 0.08) !important;
+}
+
+.calendar_default_colheader {
+    border-bottom: 1px solid #d1d5db !important;
+    color: #98FFD2 !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.16em !important;
+    background: #008080 !important;
+}
+
+.calendar_default_event_inner {
+    border-radius: 999px !important;
+    background: #008080 !important;
+    color: #ffffff !important;
+    font-size: 0.88rem !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(0, 128, 128, 0.18) !important;
+    border: none !important;
+    padding: 2px 8px !important;
+}
+
+.calendar_default_dayheader_inner {
+    font-weight: 700;
+    color: #333333;
+}
+
+.calendar_default_dayheader_inner.calendar_default_dayheader_today {
+    background: #008080;
+    color: #ffffff;
+    border-radius: 50%;
+    width: 2rem;
+    height: 2rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Barre de navigation custom */
+.dp-nav-bar {
+    background: #ffffff;
+    border-bottom: 1px solid #eef2ff;
+}
+
+.dp-nav-btn {
+    border-radius: 999px;
+    border: none;
+    background: #ecfdf5;
+    color: #0f766e;
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(15, 23, 42, 0.08);
+    white-space: nowrap;
+}
+
+.dp-nav-btn:hover {
+    filter: brightness(0.94);
+    background: #ecfdf5;
+    color: #0f766e;
+}
+
+.dp-nav-title {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #2c0f55;
+    letter-spacing: 0.06em;
+    text-transform: capitalize;
+}
+
+#rdvModal .modal-content {
+    border-radius: 24px;
+}
+
+#rdvModal .modal-header {
+    background: #ffffff;
+    border-bottom: none;
+}
+
+.add-rdv-float {
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 22px 52px rgba(15, 23, 42, 0.20);
+    z-index: 1050;
+    background: #14b8a6;
+    color: #ffffff;
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+
+.card .card-header h5 {
+    font-size: 1.05rem;
+    margin-bottom: 0;
+}
+
+.card .card-header p {
+    margin-bottom: 0;
+    color: #6b7280;
+}
+
+/* ── Navbar au-dessus du calendrier ─────────────────────────────────────── */
+#dp-nav-container {
+    width: 100%;
+}
+
+@media (max-width: 1024px) {
+    .rdvs-layout {
+        grid-template-columns: 1fr;
+    }
+    .rdvs-sidebar {
+        order: 2;
+    }
+    .rdvs-main {
+        order: 1;
+    }
+    .rdvs-sidebar-panel {
+        min-height: auto;
+    }
+    #calendar {
+        min-height: 560px;
+    }
+    .sidebar-date {
+        font-size: 1.1rem;
+    }
+    .dp-nav-bar {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .dp-nav-title {
+        font-size: 1.1rem;
+        order: -1;
+        width: 100%;
+        text-align: center;
+    }
+    .dp-nav-btn {
+        font-size: 0.78rem;
+        padding: 0.3rem 0.6rem;
+    }
+    .rdvs-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .rdvs-header .d-flex {
+        width: 100%;
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 600px) {
+    .rdvs-layout {
+        gap: 1rem;
+    }
+    .rdvs-sidebar-panel {
+        padding: 1.25rem;
+        border-radius: 16px;
+    }
+    .rdvs-calendar-card {
+        border-radius: 16px;
+    }
+    #calendar {
+        min-height: 380px;
+    }
+    .rdvs-calendar-card .card-header {
+        padding: 1rem 1rem 0.75rem;
+    }
+    .dp-nav-bar {
+        padding: 0.5rem 0.75rem !important;
+        gap: 0.4rem;
+        flex-wrap: wrap;
+    }
+    .dp-nav-btn {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.45rem;
+    }
+    .dp-nav-title {
+        font-size: 0.95rem;
+        order: -1;
+        width: 100%;
+        text-align: center;
+    }
+    .rdvs-calendar-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    .rdvs-header h1.page-title {
+        font-size: 1.2rem;
+    }
+    .sidebar-item-grid {
+        grid-template-columns: 1fr;
+    }
+    .add-rdv-float {
+        right: 16px;
+        bottom: 16px;
+        width: 52px;
+        height: 52px;
+    }
+}
+{% endblock %}
+
+{% block content %}
+    <div class="rdvs-layout">
+        <main class="rdvs-main">
+            <div class="rdvs-header">
+                <div>
+                    <h1 class="page-title"><i class="bi bi-calendar-event"></i> Gestion des Rendez-vous</h1>
+                    <p class="text-muted mb-0">Cliquez sur une date pour créer un rendez-vous directement dans la grille.</p>
+                </div>
+                <div class="d-flex gap-2">
+                    <a href="/export" class="btn btn-success"><i class="bi bi-file-earmark-excel"></i> Exporter Excel</a>
+                    <a href="/" class="btn btn-secondary"><i class="bi bi-house-door"></i> Tableau de Bord</a>
+                </div>
+            </div>
+
+            <div class="card rdvs-calendar-card">
+                <div class="card-header">
+                    <div class="rdvs-calendar-header">
+                        <span class="calendar-title">Calendrier des rendez-vous</span>
+                        <button id="openAddRdv" class="btn btn-primary btn-sm">
+                            <i class="bi bi-plus-lg me-1"></i> Nouveau RDV
+                        </button>
+                    </div>
+                    <p class="mb-0">Vue mois/heure, création rapide et modification directe.</p>
+                </div>
+                <div class="card-body p-0">
+                    <div id="dp-nav-container"></div>
+                    <div id="calendar"></div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="rdvs-sidebar">
+            <div class="rdvs-sidebar-panel">
+                <div class="sidebar-head">
+                    <p class="sidebar-pretitle">Les Rendez-vous de la journée</p>
+                    <p id="sidebarDate" class="sidebar-date">Aucune date sélectionnée</p>
+                </div>
+                <div id="sidebarContent" class="sidebar-content">
+                    <div id="sidebarEmpty" class="sidebar-empty">
+                        Pas de Rendez-Vous disponible
+                    </div>
+                    <div id="sidebarList" class="sidebar-list"></div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <button id="floatingAddRdv" class="btn btn-primary add-rdv-float" title="Ajouter un rendez-vous">
+        <i class="bi bi-plus-lg fs-4"></i>
+    </button>
+
+    <div class="modal fade" id="rdvModal" tabindex="-1" aria-labelledby="rdvModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="rdvModalLabel"><i class="bi bi-plus-circle"></i> Nouveau rendez-vous</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="rdvId" value="">
+
+                    <div class="mb-3 row gx-2">
+                        <div class="col-md-6">
+                            <label class="form-label">Date</label>
+                            <input class="form-control" type="date" id="date_debut">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Heure</label>
+                            <input class="form-control" type="time" id="heure">
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Agent</label>
+                        <select class="form-control" id="agent_id">
+                            <option value="">Sélectionner un agent</option>
+                            {% for agent in agents %}
+                            <option value="{{ agent[0] }}">{{ agent[1] }} {{ agent[2] }} {{ agent[3] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Hôtel</label>
+                        <select class="form-control" id="hotel_id">
+                            <option value="">Sélectionner un hôtel</option>
+                            {% for hotel in hotels %}
+                            <option value="{{ hotel[0] }}" data-hotel-contact="{{ hotel[10]|e }}" data-hotel-phone="{{ hotel[11]|e }}">{{ hotel[1] }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Personne à contacter</label>
+                        <input class="form-control" type="text" id="personne_contact" readonly placeholder="Sélectionnez un hôtel">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Téléphone du contact</label>
+                        <input class="form-control" type="tel" id="telephone_contact" placeholder="+243 99 000 0000">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">État</label>
+                        <select class="form-control" id="etat">
+                            <option value="en_attente">En attente</option>
+                            <option value="ok">OK</option>
+                            <option value="annule">Annulé</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger me-auto d-none" id="deleteRdvBtn">Supprimer</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="button" class="btn btn-success" id="saveRdvBtn">Enregistrer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="/static/vendor/daypilot.min.js"></script>
+<script>
+// ── DayPilot calendar instance ───────────────────────────────────────────────
+var dp;
+var _allEvents = []; // cache local pour la sidebar
+
+// ── Flash messages ───────────────────────────────────────────────────────────
+function showFlash(message, category) {
+    var fc = document.getElementById('flash-messages');
+    if (!fc) return;
+    var el = document.createElement('div');
+    el.className = 'alert alert-' + category + ' alert-dismissible fade show';
+    el.role = 'alert';
+    var icon = category === 'success' ? 'check-circle' : category === 'danger' ? 'exclamation-circle' : 'info-circle';
+    el.innerHTML = '<i class="bi bi-' + icon + '"></i> ' + message +
+        '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+    fc.appendChild(el);
+    setTimeout(function() { var b = new bootstrap.Alert(el); b.close(); }, 5000);
+}
+
+function getEventColor(etat) {
+    return { en_attente: '#f0ad4e', ok: '#198754', annule: '#dc3545' }[etat] || '#008080';
+}
+
+function formatSidebarDate(dateStr) {
+    if (!dateStr) return 'Aucune date sélectionnée';
+    var d = new Date(dateStr + 'T00:00:00');
+    return d.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// ── Sidebar ──────────────────────────────────────────────────────────────────
+function renderSidebarForDate(dateStr) {
+    var dateEl  = document.getElementById('sidebarDate');
+    var listEl  = document.getElementById('sidebarList');
+    var emptyEl = document.getElementById('sidebarEmpty');
+    if (!dateEl || !listEl || !emptyEl) return;
+    dateEl.textContent = dateStr ? formatSidebarDate(dateStr) : 'Aucune date sélectionnée';
+    var events = _allEvents.filter(function(ev) { return ev.start && ev.start.slice(0, 10) === dateStr; });
+    listEl.innerHTML = '';
+    if (!events.length) { emptyEl.style.display = 'flex'; listEl.style.display = 'none'; return; }
+    emptyEl.style.display = 'none';
+    listEl.style.display = 'flex';
+    events.sort(function(a, b) { return a.start < b.start ? -1 : 1; }).forEach(function(ev) {
+        var state      = ev.etat || 'en_attente';
+        var stateClass = state === 'ok' ? 'state-ok' : state === 'annule' ? 'state-cancel' : 'state-waiting';
+        var agentLabel = ev.agent_id ? 'Agent #' + ev.agent_id : 'Agent inconnu';
+        var hotelLabel = ev.hotel_id ? 'Hotel #' + ev.hotel_id : 'Hotel inconnu';
+        var contact    = ev.personne_contact  || 'Non renseigne';
+        var phone      = ev.telephone_contact || 'Non renseigne';
+        var startTime  = ev.start ? ev.start.slice(11, 16) : '';
+        listEl.insertAdjacentHTML('beforeend',
+            '<article class="sidebar-item">' +
+            '<div class="sidebar-time-pill">' + startTime + '</div>' +
+            '<div class="sidebar-item-grid">' +
+            '<div><span>Hotel</span><strong>' + hotelLabel + '</strong></div>' +
+            '<div><span>Agent</span><strong>' + agentLabel + '</strong></div>' +
+            '<div><span>Contact</span><strong>' + contact + '</strong></div>' +
+            '<div><span>Telephone</span><strong>' + phone + '</strong></div>' +
+            '</div>' +
+            '<span class="sidebar-item-status ' + stateClass + '">' +
+            (state === 'ok' ? 'OK' : state === 'annule' ? 'Annule' : 'En attente') +
+            '</span></article>');
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    var today               = new Date().toISOString().slice(0, 10);
+    var selectedSidebarDate = '';
+
+    // ── Helpers modal ────────────────────────────────────────────────────────
+    function getSelectedHotelInfo() {
+        var sel = document.getElementById('hotel_id');
+        if (!sel || sel.selectedIndex < 0) return { contact: '', phone: '' };
+        var opt = sel.options[sel.selectedIndex];
+        return { contact: opt.getAttribute('data-hotel-contact') || '', phone: opt.getAttribute('data-hotel-phone') || '' };
+    }
+    function populateHotelContact() {
+        var info = getSelectedHotelInfo();
+        document.getElementById('personne_contact').value  = info.contact;
+        document.getElementById('telephone_contact').value = info.phone;
+    }
+    function clearRdvModal() {
+        ['rdvId','date_debut','heure','agent_id','hotel_id','personne_contact','telephone_contact'].forEach(function(id) {
+            document.getElementById(id).value = '';
+        });
+        document.getElementById('etat').value = 'en_attente';
+        document.getElementById('deleteRdvBtn').classList.add('d-none');
+    }
+    function fillModal(d) {
+        document.getElementById('rdvId').value              = d.id           || '';
+        document.getElementById('date_debut').value         = d.date         || today;
+        document.getElementById('heure').value              = d.heure        || '';
+        document.getElementById('agent_id').value           = d.agent_id     || '';
+        document.getElementById('hotel_id').value           = d.hotel_id     || '';
+        if (d.hotel_id) populateHotelContact();
+        else { document.getElementById('personne_contact').value = ''; document.getElementById('telephone_contact').value = ''; }
+        if (d.personne_contact)  document.getElementById('personne_contact').value  = d.personne_contact;
+        if (d.telephone_contact) document.getElementById('telephone_contact').value = d.telephone_contact;
+        document.getElementById('etat').value = d.etat || 'en_attente';
+        document.getElementById('deleteRdvBtn').classList.toggle('d-none', !d.id);
+        document.getElementById('rdvModalLabel').innerHTML = d.id
+            ? '<i class="bi bi-pencil-square"></i> Modifier le rendez-vous'
+            : '<i class="bi bi-plus-circle"></i> Nouveau rendez-vous';
+    }
+    function openModal(defaultDate, eventData) {
+        fillModal(eventData || { date: defaultDate || today, heure: '09:00', agent_id: '', hotel_id: '', telephone_contact: '', etat: 'en_attente' });
+        var modalEl = document.getElementById('rdvModal');
+        // Retire aria-hidden avant d'ouvrir pour éviter le conflit de focus
+        modalEl.removeAttribute('aria-hidden');
+        new bootstrap.Modal(modalEl).show();
+    }
+    function validPastDate(dateStr) { return dateStr < today; }
+
+    // ── Boutons ──────────────────────────────────────────────────────────────
+    var btnAdd   = document.getElementById('openAddRdv');
+    var btnFloat = document.getElementById('floatingAddRdv');
+    if (btnAdd)   btnAdd.addEventListener('click',   function() { openModal(today); });
+    if (btnFloat) btnFloat.addEventListener('click', function() { openModal(today); });
+
+    var hotelSel = document.getElementById('hotel_id');
+    if (hotelSel) hotelSel.addEventListener('change', function() {
+        if (hotelSel.value) populateHotelContact();
+        else { document.getElementById('personne_contact').value = ''; document.getElementById('telephone_contact').value = ''; }
+    });
+
+    // Normalise "YYYY-MM-DDTHH:MM" → "YYYY-MM-DDTHH:MM:00" (DayPilot exige les secondes)
+    function normDate(s) {
+        if (!s) return s;
+        // Ajoute :00 si pas de secondes (longueur 16 = "YYYY-MM-DDTHH:MM")
+        return s.length === 16 ? s + ':00' : s;
+    }
+
+    // ── Chargement events depuis API ─────────────────────────────────────────
+    function loadEvents(callback) {
+        fetch('/api/rdvs')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                _allEvents = data.map(function(ev) {
+                    var ep = ev.extendedProps || {};
+                    return {
+                        id:                 String(ev.id),
+                        text:               ev.title || '',
+                        start:              normDate(ev.start),
+                        end:                normDate(ev.end),
+                        backColor:          ev.backgroundColor || getEventColor(ep.etat),
+                        borderColor:        ev.borderColor     || getEventColor(ep.etat),
+                        fontColor:          '#ffffff',
+                        etat:               ep.etat              || 'en_attente',
+                        agent_id:           ep.agent_id          || '',
+                        hotel_id:           ep.hotel_id          || '',
+                        telephone_contact:  ep.telephone_contact || '',
+                        personne_contact:   ep.personne_contact  || ''
+                    };
+                });
+                dp.events.list = _allEvents;
+                dp.update();
+                if (callback) callback();
+            })
+            .catch(function(err) { console.error('Erreur chargement events', err); });
+    }
+
+    // ── Barre de navigation custom ───────────────────────────────────────────
+    function buildNavBar() {
+        var wrap = document.createElement('div');
+        wrap.className = 'dp-nav-bar d-flex align-items-center gap-2 flex-wrap px-3 py-2 border-bottom bg-white';
+        var titleEl = document.createElement('span');
+        titleEl.className = 'dp-nav-title fw-bold fs-5 text-center flex-grow-1';
+
+        function updateTitle() {
+            var d = new Date(dp.startDate.toString().slice(0, 10) + 'T00:00:00');
+            titleEl.textContent = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+        }
+        function navBtn(label, fn) {
+            var b = document.createElement('button');
+            b.className = 'btn btn-sm dp-nav-btn';
+            b.textContent = label;
+            b.addEventListener('click', function() { fn(); updateTitle(); });
+            return b;
+        }
+
+        var leftGroup = document.createElement('div');
+        leftGroup.className = 'd-flex gap-1 flex-wrap';
+        leftGroup.appendChild(navBtn('Annee precedente', function() { dp.startDate = dp.startDate.addYears(-1);  dp.update(); }));
+        leftGroup.appendChild(navBtn('Mois precedent',   function() { dp.startDate = dp.startDate.addMonths(-1); dp.update(); }));
+        leftGroup.appendChild(navBtn("Aujourd'hui",      function() { dp.startDate = DayPilot.Date.today();      dp.update(); }));
+        leftGroup.appendChild(navBtn('Mois suivant',     function() { dp.startDate = dp.startDate.addMonths(1);  dp.update(); }));
+        leftGroup.appendChild(navBtn('Annee suivante',   function() { dp.startDate = dp.startDate.addYears(1);   dp.update(); }));
+
+        var rightGroup = document.createElement('div');
+        rightGroup.className = 'd-flex gap-1';
+        [['Mois','Month'],['Semaine','Week'],['Jour','Day']].forEach(function(pair) {
+            rightGroup.appendChild(navBtn(pair[0], function() {
+                switchView(pair[1]);
+                updateTitle();
+            }));
+        });
+
+        wrap.appendChild(leftGroup);
+        wrap.appendChild(titleEl);
+        wrap.appendChild(rightGroup);
+        updateTitle();
+        return { wrap: wrap, updateTitle: updateTitle };
+    }
+
+    // ── Changement de vue ────────────────────────────────────────────────────
+    var currentView = 'Month';
+    function switchView(view) {
+        currentView = view;
+        var navContainer = document.getElementById('dp-nav-container');
+
+        // Conserver la date courante
+        var currentDate = dp.startDate || DayPilot.Date.today();
+        var cfg = Object.assign({}, dpConfig, { startDate: currentDate });
+
+        if (view === 'Month') {
+            dp = new DayPilot.Month('calendar', cfg);
+        } else {
+            dp = new DayPilot.Calendar('calendar', cfg);
+            dp.viewType = view;
+            dp.days = (view === 'Week') ? 7 : 1;
+        }
+        dp.events.list = _allEvents;
+        dp.init();
+        var newNav = buildNavBar();
+        navContainer.innerHTML = '';
+        navContainer.appendChild(newNav.wrap);
+        setTimeout(function() { dp.update(); }, 50);
+    }
+
+    // ── Config partagée DayPilot (réutilisée lors des changements de vue) ────
+    var dpConfig = {
+        locale:              'fr-fr',
+        startDate:           DayPilot.Date.today(),
+        eventHeight:         24,
+        cellHeight:          110,
+        headerHeight:        32,
+        width:               '100%',
+        eventMoveHandling:   'Update',
+        eventResizeHandling: 'Update',
+
+        onTimeRangeSelected: function(args) {
+            var dateStr = args.start.toString('yyyy-MM-dd');
+            if (validPastDate(dateStr)) {
+                showFlash('Impossible de creer un rendez-vous sur une date passee.', 'warning');
+                return;
+            }
+            selectedSidebarDate = dateStr;
+            renderSidebarForDate(dateStr);
+            openModal(dateStr);
+        },
+
+        onEventClick: function(args) {
+            var ev      = args.e.data;
+            var dateStr = ev.start.slice(0, 10);
+            selectedSidebarDate = dateStr;
+            renderSidebarForDate(dateStr);
+            openModal(null, {
+                id:                ev.id,
+                date:              dateStr,
+                heure:             ev.start.slice(11, 16),
+                agent_id:          ev.agent_id          || '',
+                hotel_id:          ev.hotel_id          || '',
+                telephone_contact: ev.telephone_contact || '',
+                personne_contact:  ev.personne_contact  || '',
+                etat:              ev.etat              || 'en_attente'
+            });
+        },
+
+        onEventMove: function(args) {
+            var ev       = args.e.data;
+            var newStart = args.newStart.toString('yyyy-MM-ddTHH:mm:ss');
+            var newEnd   = args.newEnd.toString('yyyy-MM-ddTHH:mm:ss');
+            fetch('/api/rdvs/update/' + ev.id, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ start: newStart, end: newEnd, agent_id: ev.agent_id, hotel_id: ev.hotel_id, etat: ev.etat })
+            }).then(function(r) { return r.json(); }).then(function(res) {
+                if (!res.success) throw new Error(res.message || 'Erreur');
+                showFlash('Rendez-vous deplace avec succes.', 'success');
+                loadEvents(function() { renderSidebarForDate(selectedSidebarDate); });
+            }).catch(function() {
+                showFlash('Impossible de deplacer le rendez-vous.', 'danger');
+                loadEvents();
+            });
+        },
+
+        onEventResize: function(args) {
+            var ev       = args.e.data;
+            var newStart = args.newStart.toString('yyyy-MM-ddTHH:mm:ss');
+            var newEnd   = args.newEnd.toString('yyyy-MM-ddTHH:mm:ss');
+            fetch('/api/rdvs/update/' + ev.id, {
+                method: 'POST', headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ start: newStart, end: newEnd, agent_id: ev.agent_id, hotel_id: ev.hotel_id, etat: ev.etat })
+            }).then(function(r) { return r.json(); }).then(function(res) {
+                if (!res.success) throw new Error(res.message || 'Erreur');
+                showFlash('Duree du rendez-vous mise a jour.', 'success');
+                loadEvents(function() { renderSidebarForDate(selectedSidebarDate); });
+            }).catch(function() {
+                showFlash('Impossible de redimensionner le rendez-vous.', 'danger');
+                loadEvents();
+            });
+        },
+
+        onBeforeEventRender: function(args) {
+            var color = getEventColor(args.data.etat);
+            args.data.backColor   = color;
+            args.data.borderColor = color;
+            args.data.fontColor   = '#ffffff';
+        }
+    };
+
+    // ── Init DayPilot AVANT buildNavBar (dp.startDate doit exister) ──────────
+    dp = new DayPilot.Month('calendar', dpConfig);
+    dp.init();
+
+    // Injecter la barre de nav dans le conteneur dédié (au-dessus du calendrier)
+    var navContainer = document.getElementById('dp-nav-container');
+    var nav = buildNavBar();
+    navContainer.appendChild(nav.wrap);
+
+    // Forcer un redimensionnement après rendu complet
+    setTimeout(function() { dp.update(); }, 50);
+
+    loadEvents(function() { renderSidebarForDate(''); });
+
+    // ── Sauvegarde ───────────────────────────────────────────────────────────
+    document.getElementById('saveRdvBtn').addEventListener('click', function() {
+        var rdvId   = document.getElementById('rdvId').value;
+        var payload = {
+            date:              document.getElementById('date_debut').value,
+            heure:             document.getElementById('heure').value,
+            agent_id:          document.getElementById('agent_id').value,
+            hotel_id:          document.getElementById('hotel_id').value,
+            telephone_contact: document.getElementById('telephone_contact').value,
+            etat:              document.getElementById('etat').value
+        };
+        if (!payload.date || !payload.heure || !payload.agent_id || !payload.hotel_id) {
+            showFlash("La date, l'heure, l'agent et l'hotel sont requis.", 'warning'); return;
+        }
+        if (payload.date < today) {
+            showFlash('Les rendez-vous ne peuvent pas etre crees sur des dates passees.', 'warning'); return;
+        }
+        fetch(rdvId ? '/api/rdvs/update/' + rdvId : '/api/rdvs/create', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        }).then(function(r) { return r.json(); }).then(function(res) {
+            if (!res.success) { showFlash(res.message || 'Erreur.', 'danger'); return; }
+            selectedSidebarDate = payload.date || selectedSidebarDate;
+            loadEvents(function() { renderSidebarForDate(selectedSidebarDate); });
+            var modal = bootstrap.Modal.getInstance(document.getElementById('rdvModal'));
+            if (modal) modal.hide();
+            clearRdvModal();
+            showFlash(rdvId ? 'Rendez-vous mis a jour.' : 'Rendez-vous cree.', 'success');
+        }).catch(function() { showFlash('Une erreur est survenue.', 'danger'); });
+    });
+
+    // ── Suppression ──────────────────────────────────────────────────────────
+    document.getElementById('deleteRdvBtn').addEventListener('click', function() {
+        var rdvId = document.getElementById('rdvId').value;
+        if (!rdvId) return;
+        fetch('/api/rdvs/delete/' + rdvId, { method: 'POST', headers: { 'Content-Type': 'application/json' } })
+        .then(function(r) { return r.json(); }).then(function(res) {
+            if (!res.success) { showFlash(res.message || 'Erreur.', 'danger'); return; }
+            loadEvents(function() { renderSidebarForDate(selectedSidebarDate); });
+            var modal = bootstrap.Modal.getInstance(document.getElementById('rdvModal'));
+            if (modal) modal.hide();
+            clearRdvModal();
+            showFlash('Rendez-vous supprime.', 'success');
+        }).catch(function() { showFlash('Une erreur est survenue.', 'danger'); });
+    });
+});
+</script>
+{% endblock %}

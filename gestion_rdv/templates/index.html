@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}Tableau de Bord{% endblock %}
+
+{% block content %}
+    <h1 class="page-title"><i class="bi bi-speedometer2"></i> Tableau de Bord</h1>
+
+    <div class="row mb-5 g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card primary">
+                <div class="stat-card-body">
+                    <span class="stat-icon">👥</span>
+                    <div class="stat-title">Agents</div>
+                    <div class="stat-number">{{ total_agents }}</div>
+                    <a href="/agents" class="btn btn-primary btn-lg">Gérer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card success">
+                <div class="stat-card-body">
+                    <span class="stat-icon">🏨</span>
+                    <div class="stat-title">Hôtels</div>
+                    <div class="stat-number">{{ total_hotels }}</div>
+                    <a href="/hotels" class="btn btn-success btn-lg">Gérer</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card info">
+                <div class="stat-card-body">
+                    <span class="stat-icon">📅</span>
+                    <div class="stat-title">Total RDV</div>
+                    <div class="stat-number">{{ total_rdvs }}</div>
+                    <a href="/rdvs" class="btn btn-info btn-lg">Voir</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-lg-3">
+            <div class="stat-card warning">
+                <div class="stat-card-body">
+                    <span class="stat-icon">⏳</span>
+                    <div class="stat-title">En Attente</div>
+                    <div class="stat-number">{{ rdvs_en_attente }}</div>
+                    <a href="/rdvs?filter=en_attente" class="btn btn-warning btn-lg">Voir</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mb-5">
+        <div class="col-md-6">
+            <div class="action-card">
+                <div class="card-header">
+                    <h5><i class="bi bi-lightning"></i> Actions Rapides</h5>
+                </div>
+                <div class="card-body">
+                    <a href="/agents" class="btn btn-outline-primary"><i class="bi bi-person-plus"></i> Ajouter Agent</a>
+                    <a href="/hotels" class="btn btn-outline-success"><i class="bi bi-building"></i> Ajouter Hôtel</a>
+                    <a href="/rdvs" class="btn btn-outline-info"><i class="bi bi-calendar-plus"></i> Créer RDV</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <form id="reset-form" method="POST" action="/reset_db"></form>
+{% endblock %}

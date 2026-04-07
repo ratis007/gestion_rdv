@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.db
+
+# Flutter
+flutter_files/build/
+flutter_files/.dart_tool/
+flutter_files/.flutter-plugins
+flutter_files/.flutter-plugins-dependencies
+
+# Divers
+*.xlsx
+.vscode/

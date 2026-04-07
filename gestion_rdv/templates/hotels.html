@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block title %}Hôtels{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title mb-0"><i class="bi bi-building"></i> Gestion des Hôtels</h1>
+        <a href="/" class="btn btn-secondary"><i class="bi bi-house-door"></i> Tableau de Bord</a>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-5 col-lg-4">
+            <div class="card shadow-sm rounded-4">
+                <div class="card-header bg-white border-bottom px-4 py-3">
+                    <h5 class="mb-0"><i class="bi bi-building-add"></i> Ajouter un Hôtel</h5>
+                </div>
+                <div class="card-body px-4 py-4">
+                    <form class="needs-validation" novalidate method="POST" action="/add_hotel">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <input class="form-control" name="nom_hotel" placeholder="Nom de l’établissement" required>
+                                <div class="invalid-feedback">Nom de l’établissement requis.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <input class="form-control" name="secteur_activite" placeholder="Secteur d’activité" required>
+                                <div class="invalid-feedback">Secteur d’activité requis.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <input class="form-control" name="province" placeholder="Province" required>
+                                <div class="invalid-feedback">Province requise.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <input class="form-control" name="commune" placeholder="Commune" required>
+                                <div class="invalid-feedback">Commune requise.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <input class="form-control" name="quartier" placeholder="Quartier" required>
+                                <div class="invalid-feedback">Quartier requis.</div>
+                            </div>
+                            <div class="col-12">
+                                <textarea class="form-control" name="adresse_complete" placeholder="Adresse complète" rows="3" required></textarea>
+                                <div class="invalid-feedback">Adresse complète requise.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <input class="form-control" type="email" name="email_proprietaire" placeholder="Email propriétaire" required>
+                                <div class="invalid-feedback">Email propriétaire requis.</div>
+                            </div>
+                            <div class="col-md-6">
+                                <input class="form-control" name="personne_contact" placeholder="Personne à contacter" required>
+                                <div class="invalid-feedback">Personne à contacter requise.</div>
+                            </div>
+                            <div class="col-12">
+                                <div class="mt-3 mb-2 fw-semibold">Coordonnées de contact</div>
+                            </div>
+                            <div class="col-md-6">
+                                <input class="form-control" id="telephoneContactInput" name="telephone_contact" placeholder="+243XXXXXXXXX" required>
+                                <div class="invalid-feedback">Téléphone de contact requis.</div>
+                            </div>
+                            <div class="col-md-6 d-flex align-items-end">
+                                <small class="text-muted">Format: +243 suivi du numéro<br>Ex. +243812345678</small>
+                            </div>
+                        </div>
+                        <button class="btn btn-success w-100 mt-3"><i class="bi bi-check-circle"></i> Ajouter Hôtel</button>
+                    </form>
+                </div>
+            </div>
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5><i class="bi bi-file-earmark-spreadsheet"></i> Importer depuis Excel</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/import_hotels_excel" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <label class="form-label">Fichier Excel</label>
+                            <input type="file" class="form-control" name="excel_file" accept=".xls,.xlsx" required>
+                        </div>
+                        <button class="btn btn-primary w-100"><i class="bi bi-upload"></i> Importer</button>
+                    </form>
+                    <p class="mt-3 text-muted">Le fichier doit contenir au moins une colonne de nom d’hôtel (Nom de l’établissement, Nom, etc.).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7 col-lg-8">
+            <div class="card shadow-sm rounded-4">
+                <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center px-4 py-3">
+                    <div>
+                        <h5 class="mb-1"><i class="bi bi-list"></i> Liste des Hôtels</h5>
+                        <small class="text-muted">{{ hotels|length }} hôtels enregistrés</small>
+                    </div>
+                </div>
+                <div class="card-body px-4 py-4">
+                    <form id="bulk-delete-form" method="POST" action="/delete_hotels_bulk">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div>
+                                <button type="button" class="btn btn-danger btn-sm" id="bulk-delete-btn" onclick="showBulkDeleteModal()"><i class="bi bi-trash"></i> Supprimer la sélection</button>
+                            </div>
+                            <div>
+                                <input type="checkbox" id="select-all-hotels">
+                                <label for="select-all-hotels" class="form-label ms-1">Tout sélectionner</label>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <div class="input-group">
+                                <span class="input-group-text bg-white"><i class="bi bi-search text-muted"></i></span>
+                                <input type="text" id="hotels-search" class="form-control border-start-0" placeholder="Rechercher un hôtel (nom, commune, province…)">
+                            </div>
+                            <small id="hotels-count" class="text-muted mt-1 d-block"></small>
+                        </div>
+
+                        <div style="overflow-x: auto; max-height: 520px; overflow-y: auto;">
+                        <table class="table table-hover table-sm align-middle" id="hotels-table">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th class="text-center" style="width: 36px;"><input type="checkbox" class="select-row-checkbox"></th>
+                                        <th class="text-center" style="width: 48px;">N°</th>
+                                        <th class="sortable" style="cursor:pointer; user-select:none; white-space:nowrap;" id="sort-hotels-nom"><i class="bi bi-arrow-down-up"></i> Nom <span id="sort-hotels-icon"></span></th>
+                                        <th>Secteur</th>
+                                        <th>Province</th>
+                                        <th>Commune</th>
+                                        <th>Quartier</th>
+                                        <th>Adresse complète</th>
+                                        <th>Email propriétaire</th>
+                                        <th>Contact</th>
+                                        <th>Téléphone contact</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for hotel in hotels %}
+                                    <tr>
+                                        <td class="text-center"><input type="checkbox" class="select-row-checkbox" name="selected_ids" value="{{ hotel['id'] }}" form="bulk-delete-form"></td>
+                                        <td class="text-center">{{ loop.index }}</td>
+                                        <td class="fw-semibold text-primary">{{ hotel['nom_hotel'] }}</td>
+                                        <td>{{ hotel['secteur_activite'] or '—' }}</td>
+                                        <td>{{ hotel['province'] or '—' }}</td>
+                                        <td>{{ hotel['commune'] or '—' }}</td>
+                                        <td>{{ hotel['quartier'] or '—' }}</td>
+                                        <td class="text-truncate" style="max-width: 220px;">{{ hotel['adresse_complete'] or '—' }}</td>
+                                        <td>{{ hotel['email_proprietaire'] or '—' }}</td>
+                                        <td>{{ hotel['personne_contact'] or '—' }}</td>
+                                        <td>{{ hotel['telephone_contact'] or '—' }}</td>
+                                        <td>
+                                            <a class="btn btn-outline-secondary btn-sm me-1 mb-1" href="/edit_hotel/{{ hotel['id'] }}"><i class="bi bi-pencil-square"></i></a>
+                                            <button type="button" class="btn btn-outline-danger btn-sm mb-1 delete-link" data-delete-url="/delete_hotel/{{ hotel['id'] }}"><i class="bi bi-trash"></i></button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    function showBulkDeleteModal() {
+        var modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
+        document.getElementById('confirmDeleteBtn').onclick = function() {
+            document.getElementById('bulk-delete-form').submit();
+        };
+        modal.show();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Validation du téléphone
+        const phoneInput = document.getElementById('telephoneContactInput');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function() {
+                let value = this.value.replace(/\D/g, '');
+                if (!this.value.startsWith('+')) { value = ''; }
+                if (this.value.length > 0 && !this.value.startsWith('+243')) {
+                    this.value = '+243' + value.slice(3);
+                } else if (this.value.startsWith('+243')) {
+                    this.value = '+243' + value.slice(3);
+                }
+            });
+            phoneInput.addEventListener('blur', function() {
+                const pattern = /^\+243\d+$/;
+                if (this.value && !pattern.test(this.value)) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        }
+
+        // Validation du formulaire
+        var forms = document.querySelectorAll('.needs-validation');
+        Array.prototype.slice.call(forms).forEach(function (form) {
+            form.addEventListener('submit', function (event) {
+                const phoneInput = form.querySelector('#telephoneContactInput');
+                if (phoneInput && phoneInput.value) {
+                    const pattern = /^\+243\d{9}$/;
+                    if (!pattern.test(phoneInput.value)) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                        phoneInput.classList.add('is-invalid');
+                        return;
+                    }
+                }
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add('was-validated');
+            }, false);
+        });
+
+        // Suppression unique avec modal
+        document.querySelectorAll('.delete-link').forEach(function(button) {
+            button.addEventListener('click', function() {
+                var url = this.getAttribute('data-delete-url');
+                var modal = new bootstrap.Modal(document.getElementById('deleteModal'), {});
+                document.getElementById('confirmDeleteBtn').onclick = function() {
+                    window.location.href = url;
+                };
+                modal.show();
+            });
+        });
+
+        // Sélection multiple
+        const selectAllCheckbox = document.getElementById('select-all-hotels');
+        const rowCheckboxes = document.querySelectorAll('.select-row-checkbox[name="selected_ids"]');
+        const bulkDeleteBtn = document.getElementById('bulk-delete-btn');
+
+        function updateBulkDeleteButton() {
+            const anyChecked = Array.from(rowCheckboxes).some(cb => cb.checked);
+            bulkDeleteBtn.style.display = anyChecked ? 'inline-block' : 'none';
+        }
+        selectAllCheckbox.addEventListener('change', function() {
+            rowCheckboxes.forEach(cb => cb.checked = this.checked);
+            updateBulkDeleteButton();
+        });
+        rowCheckboxes.forEach(cb => cb.addEventListener('change', updateBulkDeleteButton));
+
+        // ── Recherche dynamique ──────────────────────────────────────────────
+        const searchInput = document.getElementById('hotels-search');
+        const countEl     = document.getElementById('hotels-count');
+        const tbody       = document.querySelector('#hotels-table tbody');
+
+        function updateCount() {
+            const visible = tbody.querySelectorAll('tr:not([style*="display: none"])').length;
+            const total   = tbody.querySelectorAll('tr').length;
+            countEl.textContent = visible < total ? visible + ' résultat(s) sur ' + total : total + ' hôtel(s)';
+        }
+        updateCount();
+
+        searchInput.addEventListener('input', function () {
+            const q = this.value.trim().toLowerCase();
+            tbody.querySelectorAll('tr').forEach(function (row) {
+                const text = row.textContent.toLowerCase();
+                row.style.display = (!q || text.includes(q)) ? '' : 'none';
+            });
+            updateCount();
+        });
+
+        // ── Tri alphabétique sur la colonne Nom hôtel ───────────────────────
+        var sortDir = 1; // 1 = A→Z, -1 = Z→A
+        const sortIcon = document.getElementById('sort-hotels-icon');
+
+        document.getElementById('sort-hotels-nom').addEventListener('click', function () {
+            const rows = Array.from(tbody.querySelectorAll('tr'));
+            rows.sort(function (a, b) {
+                // col 0 = checkbox, col 1 = N°, col 2 = Nom hôtel
+                const aVal = a.children[2].textContent.trim().toLowerCase();
+                const bVal = b.children[2].textContent.trim().toLowerCase();
+                return sortDir * aVal.localeCompare(bVal, 'fr');
+            });
+            rows.forEach(function (r) { tbody.appendChild(r); });
+            sortIcon.textContent = sortDir === 1 ? ' ▲' : ' ▼';
+            sortDir *= -1;
+        });
+    });
+    </script>
+{% endblock %}

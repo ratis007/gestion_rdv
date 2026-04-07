@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Envoyer SMS{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title mb-0"><i class="bi bi-chat-dots"></i> Envoyer un SMS</h1>
+        <a href="/" class="btn btn-secondary"><i class="bi bi-house-door"></i> Tableau de Bord</a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-send"></i> Formulaire d'envoi SMS</h5>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="/send_sms">
+                        <div class="mb-3">
+                            <label class="form-label">Numéro de téléphone</label>
+                            <input class="form-control" name="numero" placeholder="Format: +243..." required>
+                            <small class="form-text text-muted">Exemple: +243971234567</small>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Message</label>
+                            <textarea class="form-control" name="message" rows="5" placeholder="Entrez votre message ici" required></textarea>
+                        </div>
+                        <button class="btn btn-primary w-100"><i class="bi bi-check-circle"></i> Envoyer SMS</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5><i class="bi bi-info-circle"></i> Informations</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Service SMS via Orange API</strong></p>
+                    <p>Ce module vous permet d'envoyer des SMS directement aux numéros de vos contacts.</p>
+                    <ul>
+                        <li>Format requis: +243... (indicatif international)</li>
+                        <li>Longueur maximale du message: 160 caractères</li>
+                        <li>Vérifiez le format du numéro avant envoi</li>
+                    </ul>
+                    <hr>
+                    <a href="/" class="btn btn-secondary w-100"><i class="bi bi-arrow-left"></i> Retour au tableau de bord</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

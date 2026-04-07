@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Modifier Hôtel{% endblock %}
+
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="page-title mb-0"><i class="bi bi-pencil-square"></i> Modifier Hôtel</h1>
+        <a href="/hotels" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Retour à la liste</a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form class="needs-validation" novalidate method="POST" action="/update_hotel/{{ hotel['id'] }}">
+                <div class="row g-3">
+                    <div class="col-12">
+                        <input class="form-control" name="nom_hotel" placeholder="Nom de l’établissement" value="{{ hotel['nom_hotel'] }}" required>
+                        <div class="invalid-feedback">Nom de l’établissement requis.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" name="secteur_activite" placeholder="Secteur d’activité" value="{{ hotel['secteur_activite'] }}" required>
+                        <div class="invalid-feedback">Secteur d’activité requis.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" name="province" placeholder="Province" value="{{ hotel['province'] }}" required>
+                        <div class="invalid-feedback">Province requise.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" name="commune" placeholder="Commune" value="{{ hotel['commune'] }}" required>
+                        <div class="invalid-feedback">Commune requise.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" name="quartier" placeholder="Quartier" value="{{ hotel['quartier'] }}" required>
+                        <div class="invalid-feedback">Quartier requis.</div>
+                    </div>
+                    <div class="col-12">
+                        <textarea class="form-control" name="adresse_complete" placeholder="Adresse complète" rows="3" required>{{ hotel['adresse_complete'] }}</textarea>
+                        <div class="invalid-feedback">Adresse complète requise.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" type="email" name="email_proprietaire" placeholder="Email propriétaire" value="{{ hotel['email_proprietaire'] }}" required>
+                        <div class="invalid-feedback">Email propriétaire requis.</div>
+                    </div>
+                    <div class="col-md-6">
+                        <input class="form-control" name="personne_contact" placeholder="Personne à contacter" value="{{ hotel['personne_contact'] }}" required>
+                        <div class="invalid-feedback">Personne à contacter requise.</div>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Téléphone de la personne à contacter</label>
+                        <input class="form-control" name="telephone_contact" placeholder="+243XXXXXXXXX" value="{{ hotel['telephone_contact'] }}" required>
+                        <small class="form-text text-muted">Format: +243 suivi du numéro</small>
+                        <div class="invalid-feedback">Format invalide. Utilisez : +243 suivi du numéro.</div>
+                    </div>
+                </div>
+                <button class="btn btn-success w-100 mt-3"><i class="bi bi-save"></i> Enregistrer les modifications</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

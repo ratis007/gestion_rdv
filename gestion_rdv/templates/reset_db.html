@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block title %}Réinitialiser la Base de Données{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Réinitialiser la Base de Données</h4>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <strong>Attention !</strong> Cette action est irréversible. Toutes les données (agents, hôtels, rendez-vous) seront supprimées définitivement.
+                    </div>
+
+                    <form method="POST" action="/reset_db">
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Mot de passe d'authentification</label>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                            <div class="form-text">Entrez le mot de passe fourni par l'administrateur système.</div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="bi bi-database-x"></i> Réinitialiser la Base
+                            </button>
+                            <a href="/" class="btn btn-secondary">
+                                <i class="bi bi-arrow-left"></i> Annuler
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
