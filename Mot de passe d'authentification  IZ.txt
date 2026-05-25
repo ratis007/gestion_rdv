@@ -1,0 +1,63 @@
+Mot de passe d'authentification : IZI2026@RESET
+Comment utiliser :
+Cliquez sur Paramètres (⚙️) dans la barre de navigation
+Sélectionnez "Réinitialiser BD"
+Entrez le mot de passe : IZI2026@RESET
+Confirmez la réinitialisation
+
+Une application de gestion de programme d'une équipe de travailleur
+
+fonctionnement:
+entité 1:
+
+identification des agent:
+nom:
+Postnom:
+Prénom:
+Sexe:
+fonction
+telephone
+entité 2:
+
+hotel:
+nom hotel
+adresse:
+numero contact de l'hotel:
+heure du rdv
+
+
+information sur le rendez-vous?
+date rdv prevue:
+heure:
+agent assigné: nom complet, sexe
+état: ok si rdv=true (si le rdv est respecter), si rdv=false(annuler), sinon si rdv en attente.
+
+amelioration à apporter a l'application:
+Graphisme: ajouter logo IZI technologie en entete, et au bas de page copyright 2026
+Tableau de bord: 
+dans le menu outils:
+1. desactive le module "envoyer sms" et place le dans le menu parametre
+2.module "exporter excel" le placer dans le menu rdv pour permettre l'exportation direct de la base des données des rendez vous
+	2.1. faite l'exportation en gardant le meme format que dans le menu rendez-vous, c'est a dire avec : date,heure,nom de l'agent, nom de l'hotel, etat et action.
+
+
+amelioration à apporter a l'application:
+menu gestion des agents et gestion des hotels:
+1.sur le champs telephone: exiger le prefixe +243 et le nombre de caractere doit etre a 10, acceptez que le chiffre pas de lettre ni caracteres speciaux, pour valider l'ajout.
+
+2.ajouter une option de trie des elements en croissant ou en decroissant selon le choix
+
+3. Ajouter un bouton pour la suppression par selection pour une multiple suppression ou pour tout les elements
+	3.1. par rapport a la suppression que cela soit une suppression unique ou multiple prevoyez une boite des dialogue des confirmation du genre "Êtes-vous sûr de vouloir supprimer cet élément ? oui ou annuler pour confirmer l'action de suppression.
+4. un bouton pour annuler l'ajout ou la suppression donc un bouton permettant d'annuler les actions executé precedement (annuler ou retablir)
+
+concernant les agent,hotel,rdv:
+1. ajouter un bouton retour au tableau de bord
+2.prevoir une barre de defilement au cas ou les elements deviendront plus nombreux au fur et a mesure de l'utilisation de l'application
+
+pour le reste gardez la meme structure
+
+Gestion et creation des rendez-vous 
+
+PRESENTATION EN GRILLAGE sous forme de calendrier  D'AGENDANT 
+

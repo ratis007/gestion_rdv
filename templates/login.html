@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion - IZI Technologie</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        .login-container { max-width: 450px; width: 100%; }
+        .card { border: none; border-radius: 16px; box-shadow: 0 12px 48px rgba(50,58,95,0.16); }
+        .izi-logo { text-align: center; margin-bottom: 2rem; padding: 1rem 0; }
+        .izi-logo i { font-size: 3rem; color: #667eea; display: block; margin-bottom: 0.5rem; }
+        .izi-logo h2 { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 800; margin: 0; }
+        .card-body { padding: 2rem; }
+        .form-control:focus { border-color: #667eea; box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.15); }
+        .btn-login { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none; border-radius: 10px; font-weight: 600; color: white; }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3); color: white; }
+        .alert { border-radius: 10px; border: none; }
+        .footer-text { text-align: center; margin-top: 1.5rem; font-size: 0.85rem; color: #6c757d; }
+        .footer-text a { color: #667eea; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="login-container mx-auto">
+            <div class="card">
+                <div class="card-body">
+                    <div class="izi-logo">
+                        <img src="/static/rdv_manager_logo.png" alt="RDV Manager" style="height:50px; width:auto;" onerror="this.style.display='none'">
+                    </div>
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                      {% if messages %}
+                        <div class="mb-3">
+                          {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                              <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-circle' }}"></i> {{ message }}
+                              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                          {% endfor %}
+                        </div>
+                      {% endif %}
+                    {% endwith %}
+
+                    <form method="POST" action="/login">
+                        <div class="mb-3">
+                            <label class="form-label fw-600">Nom d'utilisateur</label>
+                            <input type="text" name="username" class="form-control" placeholder="Entrez votre nom d'utilisateur" required autofocus>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-600">Mot de passe</label>
+                            <input type="password" name="password" class="form-control" placeholder="Entrez votre mot de passe" required>
+                        </div>
+                        <button type="submit" class="btn btn-login w-100"><i class="bi bi-box-arrow-in-right"></i> Se connecter</button>
+                    </form>
+
+                    <div class="footer-text">
+                        <p><a href="/">Retour à l'accueil</a></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-4">
+                <small style="color: rgba(255, 255, 255, 0.8);">&copy; 2026 IZI Technologie. Tous droits réservés.</small>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
