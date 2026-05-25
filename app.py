@@ -897,6 +897,11 @@ def internal_error(error):
     return render_template('500.html'), 500
 
 
+
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    # Récupère le port attribué par Render, ou utilise 5000 par défaut en local
+    port = int(os.environ.get("PORT", 5000))
+    
+    # En production, on désactive le mode debug pour la sécurité
+    app.run(host='0.0.0.0', port=port, debug=False)
 
