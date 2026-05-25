@@ -31,7 +31,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
   bool _isLoading = true;
 
   // Remplace X par l'IP de ta machine sur le réseau local (ex: 192.168.1.42)
-  static const String serverUrl = 'http://192.168.10.155:5000';
+  final String baseUrl = "https://gestion-rdv-0fyb.onrender.com";
 
   @override
   void initState() {
