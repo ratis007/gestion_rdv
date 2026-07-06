@@ -11,9 +11,9 @@ import requests
 import pandas as pd
 
 app = Flask(__name__)
-app.secret_key = "secret123"
+app.secret_key = os.environ.get("SECRET_KEY", "secret123")
 
-DB_PATH = "database.db"
+DB_PATH = os.environ.get("DB_PATH", "database.db")
 
 
 def init_db(conn):

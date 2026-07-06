@@ -1,0 +1,12 @@
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.db
+.git/
+.gitignore
+flutter_files/
+.vscode/
+*.xlsx
+Mot de passe d'authentification  IZ.txt
